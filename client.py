@@ -13,17 +13,18 @@ print('created a socket')
 s.connect(addr)
 print('connected')
 
-while True:
-    user_input = input('Ur msg to teh serva:')
-    if user_input == 'exit':
-        break
-    if user_input == '':
-        continue
-    s.send(user_input.encode())
-    server_response = s.recv(buffsize)
-    print(server_response.decode())
+try:
+    while True:
+        user_input = input('Ur msg to teh serva:')
+        if user_input == 'exit':
+            break
+        if user_input == '':
+            continue
+        s.send(user_input.encode())
+        server_response = s.recv(buffsize)
+        print(server_response.decode())
+except ConnectionError:
+    print('Connection dropped')
 
 
-
-# print('I sent my encoded msg!', return_value)
 
