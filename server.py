@@ -1,16 +1,24 @@
-from os import error
+from json.decoder import JSONDecodeError
 import threading
 import socket
+import json
 
 def handle_client(connection):
     try:
+        all_chunks = b''
         while True:
             byte_msg = connection.recv(buffsize)
-            print(byte_msg.decode())
-            connection.send(return_msg.encode())
+            all_chunks += byte_msg
+            try:
+                recived_msg = json.loads(all_chunks.decode())
+                all_chunks = b''
+                print(recived_msg)
+                connection.send(return_msg.encode())
+            except JSONDecodeError:
+                continue
+
     except ConnectionError:
         print("The connection was dropped")
-            
 
 def dispatch_handler(connection):
     new_thread = threading.Thread(target=handle_client, args=(connection,))
@@ -21,8 +29,8 @@ def dispatch_handler(connection):
 host = 'localhost'
 port = 4800
 addr = (host,port)
-buffsize = 4096
-return_msg = 'Roger dogger!'
+buffsize = 32
+return_msg = json.dumps('Roger dogger!')
 
 s = socket.socket()
 s.settimeout(5)

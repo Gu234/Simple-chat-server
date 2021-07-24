@@ -1,12 +1,12 @@
 import socket
+import json
 
 host = 'localhost'
 port = 4800
 addr = (host,port)
-msg = 'Hello this is Mark.'
+msg = {}
 buffsize = 4096
 
-byte_msg = msg.encode()
 s = socket.socket()
 print('created a socket')
 
@@ -16,11 +16,13 @@ print('connected')
 try:
     while True:
         user_input = input('Ur msg to teh serva:')
+        msg['text'] = user_input
+
         if user_input == 'exit':
             break
         if user_input == '':
             continue
-        s.send(user_input.encode())
+        s.send(json.dumps(msg).encode())
         server_response = s.recv(buffsize)
         print(server_response.decode())
 except ConnectionError:
