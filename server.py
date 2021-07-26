@@ -1,6 +1,5 @@
 import threading
 import socket
-import json
 from utils import receive_json, send_json
 
 def handle_client(connection):
@@ -22,7 +21,7 @@ host = 'localhost'
 port = 4800
 addr = (host,port)
 buffsize = 32
-return_msg = json.dumps('Roger dogger!')
+return_msg = 'Roger dogger!'
 
 s = socket.socket()
 s.settimeout(5)
@@ -34,10 +33,8 @@ try:
     while True:
         try:
             connection, client_addr = s.accept()
-            print(connection.getblocking())
             dispatch_handler(connection)
         except socket.timeout:
-            connection.close()
             pass
 except KeyboardInterrupt:
     s.close()

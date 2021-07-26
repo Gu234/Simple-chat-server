@@ -1,5 +1,4 @@
 import json
-import socket
 
 
 def receive_json(connection, buffsize=32):

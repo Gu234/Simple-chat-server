@@ -1,5 +1,4 @@
 import socket
-import json
 from utils import receive_json, send_json
 
 
