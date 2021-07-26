@@ -1,5 +1,7 @@
 import socket
 import json
+from utils import receive_json, send_json
+
 
 host = 'localhost'
 port = 4800
@@ -19,12 +21,15 @@ try:
         msg['text'] = user_input
 
         if user_input == 'exit':
+            s.close()
             break
         if user_input == '':
             continue
-        s.send(json.dumps(msg).encode())
-        server_response = s.recv(buffsize)
-        print(server_response.decode())
+        
+        send_json(s, msg)
+        server_response = receive_json(s)
+        print(server_response)
+
 except ConnectionError:
     print('Connection dropped')
 

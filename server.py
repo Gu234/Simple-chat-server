@@ -1,22 +1,14 @@
-from json.decoder import JSONDecodeError
 import threading
 import socket
 import json
+from utils import receive_json, send_json
 
 def handle_client(connection):
     try:
-        all_chunks = b''
         while True:
-            byte_msg = connection.recv(buffsize)
-            all_chunks += byte_msg
-            try:
-                recived_msg = json.loads(all_chunks.decode())
-                all_chunks = b''
-                print(recived_msg)
-                connection.send(return_msg.encode())
-            except JSONDecodeError:
-                continue
-
+            recived_msg = receive_json(connection)
+            print(recived_msg)
+            send_json(connection, return_msg)
     except ConnectionError:
         print("The connection was dropped")
 
@@ -42,9 +34,12 @@ try:
     while True:
         try:
             connection, client_addr = s.accept()
+            print(connection.getblocking())
             dispatch_handler(connection)
         except socket.timeout:
+            connection.close()
             pass
 except KeyboardInterrupt:
+    s.close()
     print("Gracefully exiting.")
 
