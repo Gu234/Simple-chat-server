@@ -17,7 +17,7 @@ class ChatClient:
         self.ask_user_name()
         self.create_socket()
         try:
-            self.connect(ChatClient.address)
+            self.socket.connect(ChatClient.address)
             print('connected')
         except ConnectionError:
             print('failed to connect to server.')
