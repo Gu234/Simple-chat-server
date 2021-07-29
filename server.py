@@ -24,7 +24,7 @@ class ChatServer():
         counter = it.count()
         print('server is up and running')
         try:
-            dispatch_handler(self.handle_msg_sending, (self.connections, self.msgs_to_send))
+            dispatch_handler(ChatServer.handle_msg_sending, (self.connections, self.msgs_to_send))
             while True:
                 try:
                     connection, client_addr = self.server_socket.accept()
