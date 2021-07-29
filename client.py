@@ -19,6 +19,7 @@ class ChatClient:
         try:
             self.socket.connect(ChatClient.address)
             print('connected')
+            self.send_name()
         except ConnectionError:
             print('failed to connect to server.')
             return
@@ -34,6 +35,9 @@ class ChatClient:
                 print(f"{incoming_data['user_name']}: {incoming_data['text']}")
         except ConnectionError:
             print("The connection was dropped")
+
+    def send_name(self):
+        send_json(self.socket, self.msg)
 
     def ask_user_name(self):
         self.user_name = input('Enter your name: ')
