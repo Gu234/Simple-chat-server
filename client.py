@@ -1,45 +1,69 @@
 import socket
 from utils import receive_json, send_json, dispatch_handler
 
-user_name = input('Enter your name: ')
-host = 'localhost'
-port = 4800
-addr = (host,port)
-msg = {}
-msg['user_name'] = user_name
 
-buffsize = 4096
+class ChatClient:
+    host = 'localhost'
+    port = 4800
+    address = (host,port)
 
-s = socket.socket()
-print('created a socket')
+    def __init__(self) -> None:
+        self.user_name = 'annonymous'
+        self.msg = {}
+        self.msg['user_name'] = self.user_name
+        self.socket = None
 
-s.connect(addr)
-print('connected')
+    def run(self):
+        self.ask_user_name()
+        self.create_socket()
+        try:
+            self.connect(ChatClient.address)
+            print('connected')
+        except ConnectionError:
+            print('failed to connect to server.')
+            return
 
-def handle_incoming_msgs(connection, msgs):
-    try:
-        while True:
-            incoming_data = receive_json(connection)
-            print(f"{incoming_data['user_name']}: {incoming_data['text']}")
-    except ConnectionError:
-        print("The connection was dropped")
+        dispatch_handler(ChatClient.handle_incoming_msgs, (self.socket, ) )
+        self.msg_loop()
 
-try:
-    dispatch_handler(s, None, handle_incoming_msgs)
-    while True:
+    @staticmethod
+    def handle_incoming_msgs(connection):
+        try:
+            while True:
+                incoming_data = receive_json(connection)
+                print(f"{incoming_data['user_name']}: {incoming_data['text']}")
+        except ConnectionError:
+            print("The connection was dropped")
+
+    def ask_user_name(self):
+        self.user_name = input('Enter your name: ')
+        self.msg['user_name'] = self.user_name
+
+    def create_socket(self):
+        if self.socket is None:
+            self.socket = socket.socket()
+    
+    def get_msg(self):
         user_input = input('')
-        msg['text'] = user_input
-        if user_input == 'exit':
-            s.close()
-            break
-        if user_input == '':
-            continue
-        
-        send_json(s, msg)
+        self.msg['text'] = user_input
 
-except ConnectionError:
-    print('Connection dropped')
-    s.close()
+    def msg_loop(self):
+        try:
+            while True:
+                self.get_msg()
+                if self.msg['text'] == 'exit':
+                    print("Exiting...")
+                    self.socket.close()
+                    break
+                if self.msg['text'] == '':
+                    continue
+                send_json(self.socket, self.msg)
+
+        except ConnectionError:
+            print('Connection dropped')
+            self.socket.close()
 
 
-
+if __name__ == '__main__':
+    client = ChatClient()
+    client.run()

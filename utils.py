@@ -16,8 +16,8 @@ def receive_json(connection, buffsize=32):
 def send_json(connection, payload):
     connection.send(json.dumps(payload).encode())
 
-def dispatch_handler(connection, msgs, target):
-    new_thread = threading.Thread(target=target, args=(connection, msgs))
+def dispatch_handler(target, args):
+    new_thread = threading.Thread(target=target, args=args)
     new_thread.setDaemon(True)
     new_thread.start()
     return new_thread

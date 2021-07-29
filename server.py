@@ -43,7 +43,7 @@ print('binded socket to address:' , addr)
 s.listen(2)
 print('socket is listening')
 try:
-    dispatch_handler(connections, msgs_to_send, handle_msg_sending)
+    dispatch_handler(handle_msg_sending, (connections, msgs_to_send) )
     while True:
         try:
             connection, client_addr = s.accept()
